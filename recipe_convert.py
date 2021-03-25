@@ -47,7 +47,18 @@ def load_sugarfreediva(url):
     return data['@graph'][7]
 
 
-#load allrecipes.com.au... uses <li> tags instead of JSON
+#load epicurious..uses <li> tags instead of JSON
+def load_epicurious(url):
+    recipesource = requests.get(url)
+    source = BeautifulSoup(recipesource.text, features="html.parser")
+    ingreds = source.find_all("li", {"itemprop": "ingredients"})
+    data = {}
+    data['recipeIngredient'] = []
+    for ingredient in ingreds:
+        data['recipeIngredient'].append(striptags(str(ingredient)))
+    return data
+
+#load allrecipes.com.au..uses <li> tags instead of JSON
 def load_arau(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
@@ -100,6 +111,8 @@ def get_ingredients(url):
         result = load_arau(recipe)
     elif  'allrecipes.com' in parts[2]:
         result = load_allrecipes(recipe)
+    elif  'epicurious.com' in parts[2]:
+        result = load_epicurious(recipe)
     else:
         result = load_skel(recipe)
     return result

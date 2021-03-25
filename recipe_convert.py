@@ -48,6 +48,16 @@ def load_sugarfreediva(url):
     data = json.loads(striptags(str(slugs[0])))
     return data["@graph"][len(data["@graph"]) - 1]
 
+# load simply recipes..uses <li> tags instead of JSON
+def load_simplyrecipes(url):
+    recipesource = requests.get(url)
+    source = BeautifulSoup(recipesource.text, features="html.parser")
+    ingreds = source.find_all("li", {"class": "ingredient"})
+    data = {"recipeIngredient": []}
+    for ingredient in ingreds:
+        data["recipeIngredient"].append(striptags(str(ingredient)).strip())
+    return data
+
 
 # load epicurious..uses <li> tags instead of JSON
 def load_epicurious(url):
@@ -149,6 +159,8 @@ def get_ingredients(url):
         return load_sugarfreediva(recipe)
     elif "livelighter.com.au" in url:
         return load_epicurious(recipe)
+    elif "simplyrecipes.com" in url:
+        return load_simplyrecipes(recipe)
     else:
         return load_skel(recipe)
 

@@ -46,6 +46,18 @@ def load_sugarfreediva(url):
     data = json.loads(striptags(str(slugs[0])))
     return data['@graph'][7]
 
+
+#load allrecipes.com.au... uses <li> tags instead of JSON
+def load_arau(url):
+    recipesource = requests.get(url)
+    source = BeautifulSoup(recipesource.text, features="html.parser")
+    ingreds = source.find_all("span", {"itemprop": "ingredients"})
+    data = {}
+    data['recipeIngredient'] = []
+    for ingredient in ingreds:
+        data['recipeIngredient'].append(striptags(str(ingredient)))
+    return data
+
 #load nigella.com... uses <li> tags instead of JSON
 def load_nigella(url):
     recipesource = requests.get(url)
@@ -72,9 +84,7 @@ def convert_to_grams(ingredients):
 #work out which way we need to import the recipe
 def get_ingredients(url):
     parts = url.split('/')
-    if  'allrecipes' in parts[2]:
-        result = load_allrecipes(recipe)
-    elif  'taste.com.au' in parts[2]:
+    if  'taste.com.au' in parts[2]:
         result = load_taste(recipe)
     elif  'sugarfreediva' in parts[2]:
         result = load_sugarfreediva(recipe)
@@ -86,6 +96,10 @@ def get_ingredients(url):
         result = load_jamieoliver(recipe)
     elif 'nigella.com' in parts[2]:
         result = load_nigella(recipe)
+    elif 'allrecipes.com.au' in parts[2]:
+        result = load_arau(recipe)
+    elif  'allrecipes.com' in parts[2]:
+        result = load_allrecipes(recipe)
     else:
         result = load_skel(recipe)
     return result

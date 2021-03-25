@@ -98,11 +98,20 @@ def load_sbs(url):
     return(data)
 # default skeleton for working out how to unpack the recipe
 
+def load_delicious(url):
+    recipesource = requests.get(url)
+    source = BeautifulSoup(recipesource.text, features="html.parser")
+    slugs = source.find("script", {"type": "application/ld+json"})
+    data = json.loads(striptags(str(slugs)))
+    return data
+
 def load_skel(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
-    slugs = source.find_all("script", {"type": "application/ld+json"})
-    print(slugs)
+    slugs = source.find("script", {"type": "application/ld+json"})
+    print(slugs.text)
+    data = json.loads(striptags(str(slugs)))
+    return data
 
 
 # will be the process to iterate ingredients and convert
@@ -134,6 +143,8 @@ def get_ingredients(url):
         result = load_epicurious(recipe)
     elif "sbs.com.au" in parts[2]:
         result = load_sbs(recipe)
+    elif "delicious.com.au" in parts[2]:
+        result = load_delicious(recipe)
     else:
         result = load_skel(recipe)
     return result

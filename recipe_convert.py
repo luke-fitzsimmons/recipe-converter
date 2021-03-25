@@ -145,6 +145,8 @@ def get_ingredients(url):
         result = load_sbs(recipe)
     elif "delicious.com.au" in parts[2]:
         result = load_delicious(recipe)
+    elif "goodfood.com.au" in parts[2]:
+        result = load_delicious(recipe)
     else:
         result = load_skel(recipe)
     return result

@@ -46,11 +46,23 @@ def load_sugarfreediva(url):
     data = json.loads(striptags(str(slugs[0])))
     return data['@graph'][7]
 
+#load nigella.com... uses <li> tags instead of JSON
+def load_nigella(url):
+    recipesource = requests.get(url)
+    source = BeautifulSoup(recipesource.text, features="html.parser")
+    ingreds = source.find_all("li", {"itemprop": "recipeIngredient"})
+    data = {}
+    data['recipeIngredient'] = []
+    for ingredient in ingreds:
+        data['recipeIngredient'].append(striptags(str(ingredient)))
+    return data
+
 #default skeleton for working out how to unpack the recipe
 def load_skel(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
     slugs = source.find_all("script", {"type": "application/ld+json"})
+    print(slugs)
 
 #will be the process to iterate ingredients and convert
 def convert_to_grams(ingredients):
@@ -72,6 +84,8 @@ def get_ingredients(url):
         result = load_jamieoliver(recipe)
     elif 'jamieoliver' in parts[2]:
         result = load_jamieoliver(recipe)
+    elif 'nigella.com' in parts[2]:
+        result = load_nigella(recipe)
     else:
         result = load_skel(recipe)
     return result

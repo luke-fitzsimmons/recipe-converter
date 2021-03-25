@@ -83,8 +83,6 @@ def load_nigella(url):
 
 
 # load sbs food
-
-
 def load_sbs(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
@@ -121,36 +119,35 @@ def convert_to_grams(ingredients):
 
 # work out which way we need to import the recipe
 def get_ingredients(url):
-    parts = url.split("/")
-    if "taste.com.au" in parts[2]:
+    if "taste.com.au" in url:
         return load_taste(recipe)
-    elif "sugarfreediva" in parts[2]:
+    elif "sugarfreediva" in url:
         return load_sugarfreediva(recipe)
-    elif "bestrecipes" in parts[2]:
+    elif "bestrecipes" in url:
         return load_taste(recipe)
-    elif "bbc.co.uk" in parts[2]:
+    elif "bbc.co.uk" in url:
         return load_jamieoliver(recipe)
-    elif "jamieoliver" in parts[2]:
+    elif "jamieoliver.com" in url:
         return load_jamieoliver(recipe)
-    elif "nigella.com" in parts[2]:
+    elif "nigella.com" in url:
         return load_nigella(recipe)
-    elif "allrecipes.com.au" in parts[2]:
+    elif "allrecipes.com.au" in url:
         return load_arau(recipe)
-    elif "allrecipes.com" in parts[2]:
+    elif "allrecipes.com" in url:
         return load_allrecipes(recipe)
-    elif "epicurious.com" in parts[2]:
+    elif "epicurious.com" in url:
         return load_epicurious(recipe)
-    elif "sbs.com.au" in parts[2]:
+    elif "sbs.com.au" in url:
         return load_sbs(recipe)
-    elif "delicious.com.au" in parts[2]:
+    elif "delicious.com.au" in url:
         return load_delicious(recipe)
-    elif "goodfood.com.au" in parts[2]:
+    elif "goodfood.com.au" in url:
         return load_delicious(recipe)
-    elif "recipetineats.com" in parts[2]:
+    elif "recipetineats.com" in url:
         return load_sugarfreediva(recipe)
-    elif "4ingredients.com.au" in parts[2]:
+    elif "4ingredients.com.au" in url:
         return load_sugarfreediva(recipe)
-    elif "livelighter.com.au" in parts[2]:
+    elif "livelighter.com.au" in url:
         return load_epicurious(recipe)
     else:
         return load_skel(recipe)

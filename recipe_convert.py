@@ -9,8 +9,7 @@ import re
 # strip tags from the soup
 def striptags(raw_html):
     cleanr = re.compile("<.*?>")
-    cleantext = re.sub(cleanr, "", raw_html)
-    return cleantext
+    return re.sub(cleanr, "", raw_html)
 
 
 # load a recipe from taste.com.au
@@ -55,8 +54,7 @@ def load_epicurious(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
     ingreds = source.find_all("li", {"itemprop": "ingredients"})
-    data = {}
-    data["recipeIngredient"] = []
+    data = {"recipeIngredient": []}
     for ingredient in ingreds:
         data["recipeIngredient"].append(striptags(str(ingredient)).strip())
     return data
@@ -67,8 +65,7 @@ def load_arau(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
     ingreds = source.find_all("span", {"itemprop": "ingredients"})
-    data = {}
-    data["recipeIngredient"] = []
+    data = {"recipeIngredient": []}
     for ingredient in ingreds:
         data["recipeIngredient"].append(striptags(str(ingredient)))
     return data
@@ -79,8 +76,7 @@ def load_nigella(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
     ingreds = source.find_all("li", {"itemprop": "recipeIngredient"})
-    data = {}
-    data["recipeIngredient"] = []
+    data = {"recipeIngredient": []}
     for ingredient in ingreds:
         data["recipeIngredient"].append(striptags(str(ingredient)))
     return data
@@ -93,8 +89,7 @@ def load_sbs(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
     slugs = source.find("div", {"class": "field-name-field-ingredients"})
-    data = {}
-    data["recipeIngredient"] = []
+    data = {"recipeIngredient": []}
     for i in slugs.text.split("\n"):
         if i != "":
             data["recipeIngredient"].append(striptags(str(i)))
@@ -106,8 +101,7 @@ def load_delicious(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
     slugs = source.find("script", {"type": "application/ld+json"})
-    data = json.loads(striptags(str(slugs)))
-    return data
+    return json.loads(striptags(str(slugs)))
 
 
 # default skeleton for working out how to unpack the recipe
@@ -116,8 +110,7 @@ def load_skel(url):
     source = BeautifulSoup(recipesource.text, features="html.parser")
     slugs = source.find_all("script", {"type": "application/ld+json"})
     print(slugs)
-    data = json.loads(striptags(str(slugs)))
-    return data
+    return json.loads(striptags(str(slugs)))
 
 
 # will be the process to iterate ingredients and convert
@@ -130,38 +123,37 @@ def convert_to_grams(ingredients):
 def get_ingredients(url):
     parts = url.split("/")
     if "taste.com.au" in parts[2]:
-        result = load_taste(recipe)
+        return load_taste(recipe)
     elif "sugarfreediva" in parts[2]:
-        result = load_sugarfreediva(recipe)
+        return load_sugarfreediva(recipe)
     elif "bestrecipes" in parts[2]:
-        result = load_taste(recipe)
+        return load_taste(recipe)
     elif "bbc.co.uk" in parts[2]:
-        result = load_jamieoliver(recipe)
+        return load_jamieoliver(recipe)
     elif "jamieoliver" in parts[2]:
-        result = load_jamieoliver(recipe)
+        return load_jamieoliver(recipe)
     elif "nigella.com" in parts[2]:
-        result = load_nigella(recipe)
+        return load_nigella(recipe)
     elif "allrecipes.com.au" in parts[2]:
-        result = load_arau(recipe)
+        return load_arau(recipe)
     elif "allrecipes.com" in parts[2]:
-        result = load_allrecipes(recipe)
+        return load_allrecipes(recipe)
     elif "epicurious.com" in parts[2]:
-        result = load_epicurious(recipe)
+        return load_epicurious(recipe)
     elif "sbs.com.au" in parts[2]:
-        result = load_sbs(recipe)
+        return load_sbs(recipe)
     elif "delicious.com.au" in parts[2]:
-        result = load_delicious(recipe)
+        return load_delicious(recipe)
     elif "goodfood.com.au" in parts[2]:
-        result = load_delicious(recipe)
+        return load_delicious(recipe)
     elif "recipetineats.com" in parts[2]:
-        result = load_sugarfreediva(recipe)
+        return load_sugarfreediva(recipe)
     elif "4ingredients.com.au" in parts[2]:
-        result = load_sugarfreediva(recipe)
+        return load_sugarfreediva(recipe)
     elif "livelighter.com.au" in parts[2]:
-        result = load_epicurious(recipe)
+        return load_epicurious(recipe)
     else:
-        result = load_skel(recipe)
-    return result
+        return load_skel(recipe)
 
 
 # taking recipe URL from commandline

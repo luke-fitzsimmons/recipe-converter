@@ -86,7 +86,18 @@ def load_nigella(url):
     return data
 
 
+def load_sbs(url):
+    recipesource = requests.get(url)
+    source = BeautifulSoup(recipesource.text, features="html.parser")
+    slugs = source.find("div", {"class": "field-name-field-ingredients"})
+    data = {}
+    data["recipeIngredient"] = []
+    for i in slugs.text.split('\n'):
+        if i != '':
+            data["recipeIngredient"].append(striptags(str(i)))
+    return(data)
 # default skeleton for working out how to unpack the recipe
+
 def load_skel(url):
     recipesource = requests.get(url)
     source = BeautifulSoup(recipesource.text, features="html.parser")
@@ -121,6 +132,8 @@ def get_ingredients(url):
         result = load_allrecipes(recipe)
     elif "epicurious.com" in parts[2]:
         result = load_epicurious(recipe)
+    elif "sbs.com.au" in parts[2]:
+        result = load_sbs(recipe)
     else:
         result = load_skel(recipe)
     return result
